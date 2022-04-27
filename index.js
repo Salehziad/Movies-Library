@@ -46,5 +46,5 @@ app.get('/',(req,res)=>res.send('500 error'))
 app.use(function(err,req,res,text){
     res.type('text/plain');
     res.status(500);
-    res.send('internal server error 500');
+    res.send('Sorry, something went wrong');
 });
