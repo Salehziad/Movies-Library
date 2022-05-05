@@ -13,9 +13,9 @@ const PORT = 3000;
 
 
 //routes
+app.listen(PORT, handleListen);
 app.get("/favorite", handleFavoritePage)
 app.get("/test", handleHomePage);
-app.listen(PORT, handleListen);
 app.get("/home", handleMovie);
 app.get("/trending", hendleTrendMovie);
 app.get("/searchMovieOne", handleSearchOne);
