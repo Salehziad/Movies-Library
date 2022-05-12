@@ -28,6 +28,17 @@
 -you can add any fielm you want by specific info.
 -you can search on any fielm in api or from added fielms
 ## Getting Started
-to run this project you need to run server and start making full crud
+*npm init -y // -y means --yes
+*create an index.js , name is optional
+*Install express package to use itnpm install express
+*use npm i to install all package that used in this progect
+*added the server code inside index.js
+*run the server using node index.js
+*Find API
+*Read documentation
+*Making requests from the server
+*Get favmovie with id by params
+*Update (put) movies information
+*Delete Movies from the database
 ## Project Features
-it will be fueature wap app to make full crud about fielms
+make Movies app

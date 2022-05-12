@@ -8,42 +8,45 @@ const movieData = require("./data.json");
 const cors = require('cors');
 const axios = require('axios').default;
 const apiKey = process.env.API_KEY;
+console.log(apiKey);
 const {
     Client
 } = require('pg')
-const client = new Client(url)
+// const client = new Client(url)
+const client = new pg.Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+ });
+
+ 
 const app = express();
 app.use(express.json());
-
-//routes
-
 app.use(cors());
+//routes 
+
+//task11
+app.get("/", handleMovie);
+app.get("/favorite", handleFavoritePage)
+//task 12
+app.get("/trending", hendleTrendMovie);
+app.get("/search", handleSearch);
+
+
 app.post("/addMovie", handleAddMovie);
 app.get("/getAllMovie", handleGetAllMovie)
-app.get("/favorite", handleFavoritePage)
-app.get("/test", handleHomePage);
-app.get("/home", handleMovie);
-app.get("/trending", hendleTrendMovie);
-app.get("/searchMovieOne", handleSearchOne);
-app.get("/searchMovieTwo", handleSearchTwo);
-app.get("/getMovie", handleGetMovie);
-app.get("/getMoviev1", handleGetMoviev1);
-app.get("/deleteMovie", handleDeleteMovie)
-app.delete("/deleteMoviev1", handleDeleteMoViev1)
-app.put("/updateMovie", handleUpdateMovie)
 
+// app.get("/", handleHomePage);
+
+
+
+
+app.get("/getMoviev1", handleGetMoviev1);
+app.delete("/deleteMoviev1/:movieId", handleDeleteMoViev1)
+app.put("/updateMovie", handleUpdateMovie)
+app.get("*",notFoundHandler);
 //function for task 14
 
-//      http://localhost:3000/getMovie
-function handleGetMovie(req, res) {
-    let sql = 'select * from movie WHERE id = $1;'
-    let value = ["6"];
-    client.query(sql, value).then((result) => {
-        res.json(result.rows);
-    }).catch((err) => {
-        handleError(err, req, res);
-    })
-}
+
 
 //      http://localhost:3000/getMoviev1?movieId=test
 function handleGetMoviev1(req, res) {
@@ -59,22 +62,11 @@ function handleGetMoviev1(req, res) {
     })
 }
 
-//      http://localhost:3000/deleteMovie
-function handleDeleteMovie(req, res) {
-    let sql = 'delete from movie WHERE id = $1;'
-    let value = ["1"]
-    client.query(sql, value).then((result =>
-        res.send("movie deleted")
-    )).catch((err =>
-        handleError(err, req, res)
-    ))
-}
-
 //      http://localhost:3000/deleteMoviev1?movieId=test
 function handleDeleteMoViev1(req, res) {
     const {
         movieId
-    } = req.query;
+    } = req.params;
     let sql = 'delete from movie WHERE id = $1;'
     let value = [movieId];
     client.query(sql, value).then((result =>
@@ -129,7 +121,7 @@ function handleAddMovie(req, res) {
     let values = [id, title, release_date, poster_path, overview];
     client.query(sql, values).then((result) => {
         console.log(result.rows);
-        return res.status(201).json(result);
+        return res.status(201).json(result.rows);
     }).catch()
 }
 
@@ -158,11 +150,13 @@ function hendleTrendMovie(req, res) {
         });
 }
 
-function handleSearchOne(req, res) {
+function handleSearch(req, res) {
     let movieName = req.query.name;
-    let url = `https://api.themoviedb.org/3/trending/all/week?api_key=37ddc7081e348bf246a42f3be2b3dfd0&language=en-US${movieName}&apiKey=${apiKey}`;
+    console.log(apiKey);
+    let url=`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=en-US&query=${movieName}&page=2`
     axios.get(url)
         .then(result => {
+            console.log("run");
             res.json(result.data.results)
         })
         .catch((err => {
@@ -170,22 +164,7 @@ function handleSearchOne(req, res) {
         }));
 }
 
-function handleSearchTwo(req, res) {
-    let movieName = req.query.name;
-    let url = `https://api.themoviedb.org/3/search/movie?api_key=668baa4bb128a32b82fe0c15b21dd699&language=en-US&query=The&page=2${movieName}&apiKey=${apiKey}`;
-    axios.get(url)
-        .then(result => {
 
-            res.json(result.data.results)
-        })
-        .catch((err => {
-            handleError(err, req, res);
-        }));
-}
-
-function handleHomePage(req, res) {
-    res.send("hello");
-}
 
 function Movie(id, title, release_date, poster_path, overview) {
     this.id = id;
@@ -209,11 +188,10 @@ function handleMovie(req, res) {
     let newMovie = new Movie1(movieData.title, movieData.poster_path, movieData.overview);
     res.json(newMovie);
 }
-//handle errors
-function handleError(error, req, res) {
-    res.send(error)
+function notFoundHandler(req,res) {
+    res.status(404).send("page not found")
 }
-
 function handleError(error, req, res) {
     res.status(500).send(error)
 }
+
