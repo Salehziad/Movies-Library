@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 const url = "postgres://saleh:12345@localhost:5432/movies" // connect js with databases
-const PORT = 3000;
+const PORT = process.env.PORT;
 const express = require('express');
 const movieData = require("./data.json");
 const cors = require('cors');
@@ -18,7 +18,7 @@ const client = new pg.Client({
     ssl: { rejectUnauthorized: false }
  });
 
- 
+
 const app = express();
 app.use(express.json());
 app.use(cors());
