@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 const url = "postgres://saleh:12345@localhost:5432/movies" // connect js with databases
-const PORT = process.env.PORT;
+const PORT = process.env.PORT
 const express = require('express');
 const movieData = require("./data.json");
 const cors = require('cors');
@@ -12,11 +12,11 @@ console.log(apiKey);
 const {
     Client
 } = require('pg')
-// const client = new Client(url)
-const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
- });
+const client = new Client(url)
+// const client = new Client({
+//     connectionString: process.env.DATABASE_URL,
+//     ssl: { rejectUnauthorized: false }
+//  });
 
 
 const app = express();
@@ -111,14 +111,13 @@ function handleGetAllMovie(req, res) {
 
 function handleAddMovie(req, res) {
     const {
-        id,
         title,
         release_date,
         poster_path,
         overview
     } = req.body;
-    let sql = 'INSERT INTO movie(id,title,release_date,poster_path,overview) VALUES($1,$2,$3,$4,$5);';
-    let values = [id, title, release_date, poster_path, overview];
+    let sql = 'INSERT INTO movie(title,release_date,poster_path,overview) VALUES($1,$2,$3,$4);';
+    let values = [ title, release_date, poster_path, overview];
     client.query(sql, values).then((result) => {
         console.log(result.rows);
         return res.status(201).json(result.rows);
